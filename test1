@@ -1,5 +1,4 @@
---// Primordial UI - Exact Replica
---// Based on primordial.dev/legit.png
+--// Primordial UI Library - FULL VERSION (X Button Removed + ColorPicker Added)
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -12,7 +11,8 @@ local Player = Players.LocalPlayer
 local PrimordialUI = {
     AccentColor = Color3.fromRGB(75, 135, 255),
     Tabs = {},
-    CurrentTab = nil
+    CurrentTab = nil,
+    Toggles = {}
 }
 
 -- ScreenGui
@@ -56,7 +56,6 @@ local SidebarCorner = Instance.new("UICorner")
 SidebarCorner.CornerRadius = UDim.new(0, 8)
 SidebarCorner.Parent = Sidebar
 
--- Fix right corners
 local SidebarFix = Instance.new("Frame")
 SidebarFix.Size = UDim2.new(0, 10, 1, 0)
 SidebarFix.Position = UDim2.new(1, -10, 0, 0)
@@ -82,14 +81,13 @@ local LogoText = Instance.new("TextLabel")
 LogoText.Size = UDim2.new(0, 100, 0, 20)
 LogoText.Position = UDim2.new(0, 58, 0.5, -10)
 LogoText.BackgroundTransparency = 1
-LogoText.Text = "DEBUG"
+LogoText.Text = "EXPECTIONAL"
 LogoText.TextColor3 = Color3.fromRGB(255, 255, 255)
 LogoText.TextSize = 16
 LogoText.Font = Enum.Font.GothamBold
 LogoText.TextXAlignment = Enum.TextXAlignment.Left
 LogoText.Parent = LogoSection
 
--- Divider after logo
 local LogoDivider = Instance.new("Frame")
 LogoDivider.Size = UDim2.new(1, -30, 0, 1)
 LogoDivider.Position = UDim2.new(0, 15, 0, 70)
@@ -113,7 +111,7 @@ TabList.Padding = UDim.new(0, 4)
 TabList.SortOrder = Enum.SortOrder.LayoutOrder
 TabList.Parent = TabContainer
 
--- User Info Section (Bottom)
+-- User Section
 local UserSection = Instance.new("Frame")
 UserSection.Size = UDim2.new(1, 0, 0, 55)
 UserSection.Position = UDim2.new(0, 0, 1, -55)
@@ -207,47 +205,10 @@ ContentSubtitle.Font = Enum.Font.Gotham
 ContentSubtitle.TextXAlignment = Enum.TextXAlignment.Left
 ContentSubtitle.Parent = ContentHeader
 
--- Close Button
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -40, 0, 10)
-CloseButton.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
-CloseButton.BorderSizePixel = 0
-CloseButton.Text = "✕"
-CloseButton.TextColor3 = Color3.fromRGB(150, 150, 160)
-CloseButton.TextSize = 14
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.AutoButtonColor = false
-CloseButton.Parent = ContentHeader
-
-local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 6)
-CloseCorner.Parent = CloseButton
-
-CloseButton.MouseEnter:Connect(function()
-    TweenService:Create(CloseButton, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(200, 60, 60)}):Play()
-    TweenService:Create(CloseButton, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-end)
-
-CloseButton.MouseLeave:Connect(function()
-    TweenService:Create(CloseButton, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 30, 38)}):Play()
-    TweenService:Create(CloseButton, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(150, 150, 160)}):Play()
-end)
-
-CloseButton.MouseButton1Click:Connect(function()
-    TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0)
-    }):Play()
-    task.delay(0.3, function()
-        ScreenGui:Destroy()
-    end)
-end)
-
--- Minimize Button
+-- Minimize Button (NO X BUTTON)
 local MinimizeButton = Instance.new("TextButton")
 MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-MinimizeButton.Position = UDim2.new(1, -75, 0, 10)
+MinimizeButton.Position = UDim2.new(1, -40, 0, 10)
 MinimizeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
 MinimizeButton.BorderSizePixel = 0
 MinimizeButton.Text = "−"
@@ -269,7 +230,12 @@ MinimizeButton.MouseLeave:Connect(function()
     TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 30, 38)}):Play()
 end)
 
--- Content Scroll Container
+MinimizeButton.MouseButton1Click:Connect(function()
+    local guiVisible = MainFrame.Visible
+    MainFrame.Visible = not guiVisible
+end)
+
+-- Content Scroll
 local ContentScroll = Instance.new("ScrollingFrame")
 ContentScroll.Name = "ContentScroll"
 ContentScroll.Size = UDim2.new(1, -15, 1, -60)
@@ -281,7 +247,7 @@ ContentScroll.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 80)
 ContentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 ContentScroll.Parent = ContentArea
 
--- Two Column Layout Container
+-- Two Column Layout
 local ColumnsContainer = Instance.new("Frame")
 ColumnsContainer.Size = UDim2.new(1, -20, 1, 0)
 ColumnsContainer.Position = UDim2.new(0, 15, 0, 0)
@@ -312,7 +278,6 @@ RightColumnList.Padding = UDim.new(0, 10)
 RightColumnList.SortOrder = Enum.SortOrder.LayoutOrder
 RightColumnList.Parent = RightColumn
 
--- Update canvas size
 local function UpdateCanvasSize()
     local leftHeight = LeftColumnList.AbsoluteContentSize.Y
     local rightHeight = RightColumnList.AbsoluteContentSize.Y
@@ -366,7 +331,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
     Tab.Subtitle = subtitle or "Configure your " .. string.lower(name) .. " settings"
     Tab.Sections = {Left = {}, Right = {}}
     
-    -- Tab Button in Sidebar
     local TabButton = Instance.new("TextButton")
     TabButton.Name = name
     TabButton.Size = UDim2.new(1, -8, 0, 38)
@@ -400,7 +364,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
     TabLabel.TextXAlignment = Enum.TextXAlignment.Left
     TabLabel.Parent = TabButton
     
-    -- Active Indicator
     local ActiveIndicator = Instance.new("Frame")
     ActiveIndicator.Size = UDim2.new(0, 3, 0.6, 0)
     ActiveIndicator.Position = UDim2.new(0, 0, 0.2, 0)
@@ -413,7 +376,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
     IndicatorCorner.CornerRadius = UDim.new(0, 2)
     IndicatorCorner.Parent = ActiveIndicator
     
-    -- Tab Content Pages (Left & Right)
     local LeftContent = Instance.new("Frame")
     LeftContent.Name = name .. "_Left"
     LeftContent.Size = UDim2.new(1, 0, 0, 0)
@@ -447,9 +409,7 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
     Tab.LeftContent = LeftContent
     Tab.RightContent = RightContent
     
-    -- Select Tab Function
     local function SelectTab()
-        -- Deselect all
         for _, tab in pairs(PrimordialUI.Tabs) do
             tab.Button.BackgroundTransparency = 1
             tab.Icon.ImageColor3 = Color3.fromRGB(120, 120, 140)
@@ -460,7 +420,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
             tab.RightContent.Visible = false
         end
         
-        -- Select this tab
         TweenService:Create(TabButton, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
         TweenService:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = PrimordialUI.AccentColor}):Play()
         TweenService:Create(TabLabel, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
@@ -493,7 +452,7 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
     Tab.Select = SelectTab
     
     -- ═══════════════════════════════════════════════════════════
-    -- SECTION (Group Box)
+    -- CREATE SECTION
     -- ═══════════════════════════════════════════════════════════
     function Tab:CreateSection(sectionName, side)
         side = side or "Left"
@@ -519,7 +478,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
         SectionStroke.Color = Color3.fromRGB(35, 35, 45)
         SectionStroke.Parent = SectionFrame
         
-        -- Section Header
         local SectionHeader = Instance.new("Frame")
         SectionHeader.Size = UDim2.new(1, 0, 0, 35)
         SectionHeader.BackgroundTransparency = 1
@@ -536,7 +494,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
         SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
         SectionTitle.Parent = SectionHeader
         
-        -- Section Content
         local SectionContent = Instance.new("Frame")
         SectionContent.Name = "Content"
         SectionContent.Size = UDim2.new(1, -20, 0, 0)
@@ -550,7 +507,6 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
         ContentList.SortOrder = Enum.SortOrder.LayoutOrder
         ContentList.Parent = SectionContent
         
-        -- Section Padding
         local SectionPadding = Instance.new("Frame")
         SectionPadding.Size = UDim2.new(1, 0, 0, 10)
         SectionPadding.BackgroundTransparency = 1
@@ -616,6 +572,11 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
                 Toggle.Callback(value)
             end
             
+            function Toggle:Refresh()
+                ToggleButton.BackgroundColor3 = Toggle.Value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
+                Circle.Position = Toggle.Value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+            end
+            
             ToggleButton.MouseButton1Click:Connect(function()
                 Toggle:SetValue(not Toggle.Value)
             end)
@@ -627,6 +588,8 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
             ToggleFrame.MouseLeave:Connect(function()
                 TweenService:Create(ToggleLabel, TweenInfo.new(0.1), {TextColor3 = Color3.fromRGB(200, 200, 210)}):Play()
             end)
+            
+            table.insert(PrimordialUI.Toggles, Toggle)
             
             return Toggle
         end
@@ -1029,6 +992,12 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
                 Textbox.Callback(InputBox.Text, enter)
             end)
             
+            -- DÜZELTME: Text değişince direkt callback
+            InputBox:GetPropertyChangedSignal("Text"):Connect(function()
+                Textbox.Value = InputBox.Text
+                Textbox.Callback(InputBox.Text, false)
+            end)
+            
             function Textbox:SetValue(value)
                 InputBox.Text = value
                 Textbox.Value = value
@@ -1036,54 +1005,7 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
             
             return Textbox
         end
-
--- ═══════════════════════════════════════════════════════════════
--- ALTERNATİF: RGB SLIDER SİSTEMİ (ColorPicker yoksa)
--- ═══════════════════════════════════════════════════════════════
-
-local ColorSection = VisualsTab:CreateSection("Terrorist Color (RGB)", "Left")
-
-local tR, tG, tB = math.floor(Config.TerroristColor.R * 255), 
-                   math.floor(Config.TerroristColor.G * 255), 
-                   math.floor(Config.TerroristColor.B * 255)
-
-ColorSection:CreateSlider("Red", 0, 255, tR, "", function(v)
-    tR = v
-    Config.TerroristColor = Color3.fromRGB(tR, tG, tB)
-end)
-
-ColorSection:CreateSlider("Green", 0, 255, tG, "", function(v)
-    tG = v
-    Config.TerroristColor = Color3.fromRGB(tR, tG, tB)
-end)
-
-ColorSection:CreateSlider("Blue", 0, 255, tB, "", function(v)
-    tB = v
-    Config.TerroristColor = Color3.fromRGB(tR, tG, tB)
-end)
-
--- Aynı şekilde CT, NoTeam, Visible/Hidden renkler için tekrarla
-local CTColorSection = VisualsTab:CreateSection("CT Color (RGB)", "Right")
-
-local ctR, ctG, ctB = math.floor(Config.CounterTerroristColor.R * 255),
-                      math.floor(Config.CounterTerroristColor.G * 255),
-                      math.floor(Config.CounterTerroristColor.B * 255)
-
-CTColorSection:CreateSlider("Red", 0, 255, ctR, "", function(v)
-    ctR = v
-    Config.CounterTerroristColor = Color3.fromRGB(ctR, ctG, ctB)
-end)
-
-CTColorSection:CreateSlider("Green", 0, 255, ctG, "", function(v)
-    ctG = v
-    Config.CounterTerroristColor = Color3.fromRGB(ctR, ctG, ctB)
-end)
-
-CTColorSection:CreateSlider("Blue", 0, 255, ctB, "", function(v)
-    ctB = v
-    Config.CounterTerroristColor = Color3.fromRGB(ctR, ctG, ctB)
-end)
-
+        
         -- ═══════════════════════════════════════════════════════
         -- LABEL
         -- ═══════════════════════════════════════════════════════
@@ -1108,13 +1030,170 @@ end)
             return Label
         end
         
+        -- ═══════════════════════════════════════════════════════
+        -- COLOR PICKER (RGB SLIDERS)
+        -- ═══════════════════════════════════════════════════════
+        function Section:CreateColorPicker(name, default, callback)
+            local ColorPicker = {
+                Value = default or Color3.fromRGB(255, 255, 255),
+                Callback = callback or function() end,
+                R = math.floor((default or Color3.new(1,1,1)).R * 255),
+                G = math.floor((default or Color3.new(1,1,1)).G * 255),
+                B = math.floor((default or Color3.new(1,1,1)).B * 255)
+            }
+            
+            local ColorFrame = Instance.new("Frame")
+            ColorFrame.Size = UDim2.new(1, 0, 0, 130)
+            ColorFrame.BackgroundTransparency = 1
+            ColorFrame.Parent = SectionContent
+            
+            local ColorLabel = Instance.new("TextLabel")
+            ColorLabel.Size = UDim2.new(0.7, 0, 0, 20)
+            ColorLabel.BackgroundTransparency = 1
+            ColorLabel.Text = name
+            ColorLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+            ColorLabel.TextSize = 12
+            ColorLabel.Font = Enum.Font.Gotham
+            ColorLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ColorLabel.Parent = ColorFrame
+            
+            local ColorPreview = Instance.new("Frame")
+            ColorPreview.Size = UDim2.new(0, 40, 0, 40)
+            ColorPreview.Position = UDim2.new(1, -40, 0, 0)
+            ColorPreview.BackgroundColor3 = ColorPicker.Value
+            ColorPreview.BorderSizePixel = 0
+            ColorPreview.Parent = ColorFrame
+            
+            local PreviewCorner = Instance.new("UICorner")
+            PreviewCorner.CornerRadius = UDim.new(0, 6)
+            PreviewCorner.Parent = ColorPreview
+            
+            local PreviewStroke = Instance.new("UIStroke")
+            PreviewStroke.Thickness = 1
+            PreviewStroke.Color = Color3.fromRGB(60, 60, 80)
+            PreviewStroke.Parent = ColorPreview
+            
+            local function CreateRGBSlider(label, colorIndex, yPos, color)
+                local SliderFrame = Instance.new("Frame")
+                SliderFrame.Size = UDim2.new(1, 0, 0, 28)
+                SliderFrame.Position = UDim2.new(0, 0, 0, yPos)
+                SliderFrame.BackgroundTransparency = 1
+                SliderFrame.Parent = ColorFrame
+                
+                local SliderLabel = Instance.new("TextLabel")
+                SliderLabel.Size = UDim2.new(0, 15, 1, 0)
+                SliderLabel.BackgroundTransparency = 1
+                SliderLabel.Text = label
+                SliderLabel.TextColor3 = color
+                SliderLabel.TextSize = 12
+                SliderLabel.Font = Enum.Font.GothamBold
+                SliderLabel.Parent = SliderFrame
+                
+                local SliderValue = Instance.new("TextLabel")
+                SliderValue.Size = UDim2.new(0, 35, 1, 0)
+                SliderValue.Position = UDim2.new(1, -35, 0, 0)
+                SliderValue.BackgroundTransparency = 1
+                SliderValue.Text = tostring(ColorPicker[colorIndex])
+                SliderValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+                SliderValue.TextSize = 11
+                SliderValue.Font = Enum.Font.GothamSemibold
+                SliderValue.TextXAlignment = Enum.TextXAlignment.Right
+                SliderValue.Parent = SliderFrame
+                
+                local SliderBG = Instance.new("Frame")
+                SliderBG.Size = UDim2.new(0, 180, 0, 5)
+                SliderBG.Position = UDim2.new(0, 25, 0.5, -2)
+                SliderBG.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+                SliderBG.BorderSizePixel = 0
+                SliderBG.Parent = SliderFrame
+                
+                local SliderBGCorner = Instance.new("UICorner")
+                SliderBGCorner.CornerRadius = UDim.new(1, 0)
+                SliderBGCorner.Parent = SliderBG
+                
+                local SliderFill = Instance.new("Frame")
+                SliderFill.Size = UDim2.new(ColorPicker[colorIndex] / 255, 0, 1, 0)
+                SliderFill.BackgroundColor3 = color
+                SliderFill.BorderSizePixel = 0
+                SliderFill.Parent = SliderBG
+                
+                local SliderFillCorner = Instance.new("UICorner")
+                SliderFillCorner.CornerRadius = UDim.new(1, 0)
+                SliderFillCorner.Parent = SliderFill
+                
+                local SliderKnob = Instance.new("Frame")
+                SliderKnob.Size = UDim2.new(0, 11, 0, 11)
+                SliderKnob.Position = UDim2.new(1, -5, 0.5, -5)
+                SliderKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                SliderKnob.BorderSizePixel = 0
+                SliderKnob.ZIndex = 2
+                SliderKnob.Parent = SliderFill
+                
+                local KnobCorner = Instance.new("UICorner")
+                KnobCorner.CornerRadius = UDim.new(1, 0)
+                KnobCorner.Parent = SliderKnob
+                
+                local Dragging = false
+                
+                local function UpdateColor()
+                    local newColor = Color3.fromRGB(ColorPicker.R, ColorPicker.G, ColorPicker.B)
+                    ColorPicker.Value = newColor
+                    ColorPreview.BackgroundColor3 = newColor
+                    ColorPicker.Callback(newColor)
+                end
+                
+                SliderBG.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        Dragging = true
+                    end
+                end)
+                
+                UserInputService.InputEnded:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        Dragging = false
+                    end
+                end)
+                
+                RunService.RenderStepped:Connect(function()
+                    if Dragging then
+                        local mousePos = UserInputService:GetMouseLocation().X
+                        local relativePos = mousePos - SliderBG.AbsolutePosition.X
+                        local percentage = math.clamp(relativePos / SliderBG.AbsoluteSize.X, 0, 1)
+                        local value = math.floor(percentage * 255)
+                        
+                        ColorPicker[colorIndex] = value
+                        SliderValue.Text = tostring(value)
+                        TweenService:Create(SliderFill, TweenInfo.new(0.05), {
+                            Size = UDim2.new(percentage, 0, 1, 0)
+                        }):Play()
+                        
+                        UpdateColor()
+                    end
+                end)
+            end
+            
+            CreateRGBSlider("R", "R", 30, Color3.fromRGB(255, 100, 100))
+            CreateRGBSlider("G", "G", 62, Color3.fromRGB(100, 255, 100))
+            CreateRGBSlider("B", "B", 94, Color3.fromRGB(100, 150, 255))
+            
+            function ColorPicker:SetValue(color)
+                ColorPicker.Value = color
+                ColorPicker.R = math.floor(color.R * 255)
+                ColorPicker.G = math.floor(color.G * 255)
+                ColorPicker.B = math.floor(color.B * 255)
+                ColorPreview.BackgroundColor3 = color
+                ColorPicker.Callback(color)
+            end
+            
+            return ColorPicker
+        end
+        
         table.insert(Tab.Sections[side], Section)
         return Section
     end
     
     table.insert(PrimordialUI.Tabs, Tab)
     
-    -- First tab auto-select
     if #PrimordialUI.Tabs == 1 then
         Tab.Select()
     end
@@ -1209,7 +1288,6 @@ function PrimordialUI:Notify(title, message, duration, notifType)
     ProgressBar.BorderSizePixel = 0
     ProgressBar.Parent = Notif
     
-    -- Animations
     Notif.Position = UDim2.new(1, 20, 0, 0)
     TweenService:Create(Notif, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 0, 0, 0)}):Play()
     TweenService:Create(ProgressBar, TweenInfo.new(duration, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 0, 0, 2)}):Play()
@@ -1220,6 +1298,13 @@ function PrimordialUI:Notify(title, message, duration, notifType)
             Notif:Destroy()
         end)
     end)
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- SET VISIBLE FUNCTION
+-- ═══════════════════════════════════════════════════════════
+function PrimordialUI:SetVisible(visible)
+    MainFrame.Visible = visible
 end
 
 -- ═══════════════════════════════════════════════════════════
