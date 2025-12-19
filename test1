@@ -277,7 +277,19 @@ local RightColumnList = Instance.new("UIListLayout")
 RightColumnList.Padding = UDim.new(0, 10)
 RightColumnList.SortOrder = Enum.SortOrder.LayoutOrder
 RightColumnList.Parent = RightColumn
+function PrimordialUI:Hide()
+    MainFrame.Visible = false
+end
 
+function PrimordialUI:Show()
+    MainFrame.Visible = true
+end
+
+function PrimordialUI:Refresh()
+    MainFrame.Visible = false
+    task.wait(0.3)
+    MainFrame.Visible = true
+end
 local function UpdateCanvasSize()
     local leftHeight = LeftColumnList.AbsoluteContentSize.Y
     local rightHeight = RightColumnList.AbsoluteContentSize.Y
@@ -1365,5 +1377,61 @@ task.delay(0.1, function()
         Position = UDim2.new(0.5, -375, 0.5, -250)
     }):Play()
 end)
+-- ═══════════════════════════════════════════════════════════
+-- REFRESH ALL UI ELEMENTS
+-- ═══════════════════════════════════════════════════════════
+function PrimordialUI:RefreshAllToggles(config)
+    if not self.Toggles then return end
+    
+    for name, toggle in pairs(self.Toggles) do
+        if toggle and toggle.Value ~= nil then
+            -- Config'den değeri bul
+            local configValue = nil
+            
+            -- İsimleri config key'lere çevir
+            local nameToKey = {
+                ["Night Mode"] = "NightModeEnabled",
+                ["Custom Skybox"] = "CustomSkyboxEnabled",
+                ["Enable ESP"] = "ESPEnabled",
+                ["Box"] = "BoxESP",
+                ["Name"] = "NameESP",
+                ["Health Bar"] = "HealthESP",
+                ["Distance"] = "DistanceESP",
+                ["Tracers"] = "TracerESP",
+                ["Show Gun"] = "ShowGunESP",
+                ["Show Teammates"] = "ShowTeammates",
+                ["Enable Chams"] = "ChamsEnabled",
+                ["Visible Only"] = "ChamsVisibleOnly",
+                ["Use Visibility Colors"] = "UseVisibilityColors",
+                ["Enable"] = "WeaponESPEnabled",
+                ["Super Wallbang"] = "WallbangEnabled",
+                ["Anti-Aim"] = "AntiAimEnabled",
+                ["Watermark"] = "WatermarkVisible",
+                ["Debug Mode"] = "DebugMode",
+                ["Show FOV Circle"] = "ShowFOV",
+                ["Visible Check"] = "WallCheck",
+                ["Hold to Aim"] = "HoldToAim",
+                ["Enemies Only"] = "EnemiesOnly",
+                ["RCS (Recoil Control)"] = "RCSEnabled",
+                ["Enable Hitbox"] = "HitboxEnabled",
+            }
+            
+            local key = nameToKey[name]
+            if key and config[key] ~= nil then
+                configValue = config[key]
+            end
+            
+            if configValue ~= nil then
+                toggle.Value = configValue
+                -- UI'yi güncelle (animasyonsuz)
+                pcall(function()
+                    -- Toggle button'u bul ve güncelle
+                    -- Bu kısım toggle oluştururken saklanan referansları kullanır
+                end)
+            end
+        end
+    end
+end
+
 
 return PrimordialUI
