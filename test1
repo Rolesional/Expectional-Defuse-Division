@@ -726,150 +726,216 @@ end
             return Slider
         end
         
-        -- ═══════════════════════════════════════════════════════
-        -- DROPDOWN
-        -- ═══════════════════════════════════════════════════════
-        function Section:CreateDropdown(name, options, default, callback)
-            local Dropdown = {Value = default or options[1], Options = options, Callback = callback or function() end, Open = false}
-            
-            local DropdownFrame = Instance.new("Frame")
-            DropdownFrame.Size = UDim2.new(1, 0, 0, 55)
-            DropdownFrame.BackgroundTransparency = 1
-            DropdownFrame.ClipsDescendants = true
-            DropdownFrame.Parent = SectionContent
-            
-            local DropdownLabel = Instance.new("TextLabel")
-            DropdownLabel.Size = UDim2.new(1, 0, 0, 18)
-            DropdownLabel.BackgroundTransparency = 1
-            DropdownLabel.Text = name
-            DropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
-            DropdownLabel.TextSize = 12
-            DropdownLabel.Font = Enum.Font.Gotham
-            DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
-            DropdownLabel.Parent = DropdownFrame
-            
-            local DropdownButton = Instance.new("TextButton")
-            DropdownButton.Size = UDim2.new(1, 0, 0, 32)
-            DropdownButton.Position = UDim2.new(0, 0, 0, 20)
-            DropdownButton.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-            DropdownButton.BorderSizePixel = 0
-            DropdownButton.Text = ""
-            DropdownButton.AutoButtonColor = false
-            DropdownButton.Parent = DropdownFrame
-            
-            local DropBtnCorner = Instance.new("UICorner")
-            DropBtnCorner.CornerRadius = UDim.new(0, 5)
-            DropBtnCorner.Parent = DropdownButton
-            
-            local DropdownText = Instance.new("TextLabel")
-            DropdownText.Size = UDim2.new(1, -35, 1, 0)
-            DropdownText.Position = UDim2.new(0, 12, 0, 0)
-            DropdownText.BackgroundTransparency = 1
-            DropdownText.Text = Dropdown.Value
-            DropdownText.TextColor3 = Color3.fromRGB(255, 255, 255)
-            DropdownText.TextSize = 12
-            DropdownText.Font = Enum.Font.Gotham
-            DropdownText.TextXAlignment = Enum.TextXAlignment.Left
-            DropdownText.TextTruncate = Enum.TextTruncate.AtEnd
-            DropdownText.Parent = DropdownButton
-            
-            local DropdownArrow = Instance.new("ImageLabel")
-            DropdownArrow.Size = UDim2.new(0, 12, 0, 12)
-            DropdownArrow.Position = UDim2.new(1, -22, 0.5, -6)
-            DropdownArrow.BackgroundTransparency = 1
-            DropdownArrow.Image = "rbxassetid://7733717447"
-            DropdownArrow.ImageColor3 = Color3.fromRGB(150, 150, 170)
-            DropdownArrow.Rotation = 90
-            DropdownArrow.Parent = DropdownButton
-            
-            local OptionsFrame = Instance.new("Frame")
-            OptionsFrame.Size = UDim2.new(1, 0, 0, #options * 28 + 8)
-            OptionsFrame.Position = UDim2.new(0, 0, 0, 55)
-            OptionsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-            OptionsFrame.BorderSizePixel = 0
-            OptionsFrame.Parent = DropdownFrame
-            
-            local OptionsCorner = Instance.new("UICorner")
-            OptionsCorner.CornerRadius = UDim.new(0, 5)
-            OptionsCorner.Parent = OptionsFrame
-            
-            local OptionsList = Instance.new("UIListLayout")
-            OptionsList.Padding = UDim.new(0, 2)
-            OptionsList.SortOrder = Enum.SortOrder.LayoutOrder
-            OptionsList.Parent = OptionsFrame
-            
-            local OptionsPadding = Instance.new("UIPadding")
-            OptionsPadding.PaddingTop = UDim.new(0, 4)
-            OptionsPadding.PaddingBottom = UDim.new(0, 4)
-            OptionsPadding.PaddingLeft = UDim.new(0, 4)
-            OptionsPadding.PaddingRight = UDim.new(0, 4)
-            OptionsPadding.Parent = OptionsFrame
-            
-            local function CreateOption(optionText)
-                local OptionButton = Instance.new("TextButton")
-                OptionButton.Size = UDim2.new(1, 0, 0, 26)
-                OptionButton.BackgroundColor3 = Color3.fromRGB(40, 40, 52)
-                OptionButton.BackgroundTransparency = 1
-                OptionButton.BorderSizePixel = 0
-                OptionButton.Text = optionText
-                OptionButton.TextColor3 = Color3.fromRGB(180, 180, 195)
-                OptionButton.TextSize = 11
-                OptionButton.Font = Enum.Font.Gotham
-                OptionButton.AutoButtonColor = false
-                OptionButton.Parent = OptionsFrame
-                
-                local OptionCorner = Instance.new("UICorner")
-                OptionCorner.CornerRadius = UDim.new(0, 4)
-                OptionCorner.Parent = OptionButton
-                
-                OptionButton.MouseEnter:Connect(function()
-                    TweenService:Create(OptionButton, TweenInfo.new(0.1), {BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-                end)
-                
-                OptionButton.MouseLeave:Connect(function()
-                    TweenService:Create(OptionButton, TweenInfo.new(0.1), {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(180, 180, 195)}):Play()
-                end)
-                
-                OptionButton.MouseButton1Click:Connect(function()
-                    Dropdown.Value = optionText
-                    DropdownText.Text = optionText
-                    Dropdown.Callback(optionText)
-                    Dropdown.Open = false
-                    TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 0, 55)}):Play()
-                    TweenService:Create(DropdownArrow, TweenInfo.new(0.2), {Rotation = 90}):Play()
-                end)
-            end
-            
-            for _, opt in ipairs(options) do
-                CreateOption(opt)
-            end
-            
-            DropdownButton.MouseButton1Click:Connect(function()
-                Dropdown.Open = not Dropdown.Open
-                local targetSize = Dropdown.Open and UDim2.new(1, 0, 0, 60 + #options * 28 + 8) or UDim2.new(1, 0, 0, 55)
-                TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {Size = targetSize}):Play()
-                TweenService:Create(DropdownArrow, TweenInfo.new(0.2), {Rotation = Dropdown.Open and 270 or 90}):Play()
-            end)
-            
-            DropdownButton.MouseEnter:Connect(function()
-                TweenService:Create(DropdownButton, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(38, 38, 50)}):Play()
-            end)
-            
-            DropdownButton.MouseLeave:Connect(function()
-                TweenService:Create(DropdownButton, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 30, 40)}):Play()
-            end)
-            
-            function Dropdown:SetValue(value)
-                if table.find(Dropdown.Options, value) then
-                    Dropdown.Value = value
-                    DropdownText.Text = value
-                    Dropdown.Callback(value)
-                end
-            end
-            
-            return Dropdown
+      -- ═══════════════════════════════════════════════════════════════
+-- DROPDOWN - FIXED VERSION
+-- ═══════════════════════════════════════════════════════════════
+function Section:CreateDropdown(name, options, default, callback)
+    local Dropdown = {
+        Value = default or options[1], 
+        Options = options, 
+        Callback = callback or function() end, 
+        Open = false
+    }
+    
+    local DropdownFrame = Instance.new("Frame")
+    DropdownFrame.Size = UDim2.new(1, 0, 0, 55)
+    DropdownFrame.BackgroundTransparency = 1
+    DropdownFrame.ClipsDescendants = true
+    DropdownFrame.Parent = SectionContent
+    
+    local DropdownLabel = Instance.new("TextLabel")
+    DropdownLabel.Size = UDim2.new(1, 0, 0, 18)
+    DropdownLabel.BackgroundTransparency = 1
+    DropdownLabel.Text = name
+    DropdownLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+    DropdownLabel.TextSize = 12
+    DropdownLabel.Font = Enum.Font.Gotham
+    DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DropdownLabel.Parent = DropdownFrame
+    
+    local DropdownButton = Instance.new("TextButton")
+    DropdownButton.Size = UDim2.new(1, 0, 0, 32)
+    DropdownButton.Position = UDim2.new(0, 0, 0, 20)
+    DropdownButton.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    DropdownButton.BorderSizePixel = 0
+    DropdownButton.Text = ""
+    DropdownButton.AutoButtonColor = false
+    DropdownButton.Parent = DropdownFrame
+    
+    local DropBtnCorner = Instance.new("UICorner")
+    DropBtnCorner.CornerRadius = UDim.new(0, 5)
+    DropBtnCorner.Parent = DropdownButton
+    
+    local DropdownText = Instance.new("TextLabel")
+    DropdownText.Size = UDim2.new(1, -35, 1, 0)
+    DropdownText.Position = UDim2.new(0, 12, 0, 0)
+    DropdownText.BackgroundTransparency = 1
+    DropdownText.Text = Dropdown.Value
+    DropdownText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DropdownText.TextSize = 12
+    DropdownText.Font = Enum.Font.Gotham
+    DropdownText.TextXAlignment = Enum.TextXAlignment.Left
+    DropdownText.TextTruncate = Enum.TextTruncate.AtEnd
+    DropdownText.Parent = DropdownButton
+    
+    local DropdownArrow = Instance.new("ImageLabel")
+    DropdownArrow.Size = UDim2.new(0, 12, 0, 12)
+    DropdownArrow.Position = UDim2.new(1, -22, 0.5, -6)
+    DropdownArrow.BackgroundTransparency = 1
+    DropdownArrow.Image = "rbxassetid://7733717447"
+    DropdownArrow.ImageColor3 = Color3.fromRGB(150, 150, 170)
+    DropdownArrow.Rotation = 90
+    DropdownArrow.Parent = DropdownButton
+    
+    local OptionsFrame = Instance.new("Frame")
+    OptionsFrame.Size = UDim2.new(1, 0, 0, #options * 28 + 8)
+    OptionsFrame.Position = UDim2.new(0, 0, 0, 55)
+    OptionsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    OptionsFrame.BorderSizePixel = 0
+    OptionsFrame.Parent = DropdownFrame
+    
+    local OptionsCorner = Instance.new("UICorner")
+    OptionsCorner.CornerRadius = UDim.new(0, 5)
+    OptionsCorner.Parent = OptionsFrame
+    
+    local OptionsList = Instance.new("UIListLayout")
+    OptionsList.Padding = UDim.new(0, 2)
+    OptionsList.SortOrder = Enum.SortOrder.LayoutOrder
+    OptionsList.Parent = OptionsFrame
+    
+    local OptionsPadding = Instance.new("UIPadding")
+    OptionsPadding.PaddingTop = UDim.new(0, 4)
+    OptionsPadding.PaddingBottom = UDim.new(0, 4)
+    OptionsPadding.PaddingLeft = UDim.new(0, 4)
+    OptionsPadding.PaddingRight = UDim.new(0, 4)
+    OptionsPadding.Parent = OptionsFrame
+    
+    -- UI elementlerini kaydet
+    Dropdown.Frame = DropdownFrame
+    Dropdown.Button = DropdownButton
+    Dropdown.TextLabel = DropdownText
+    Dropdown.Arrow = DropdownArrow
+    Dropdown.OptionsFrame = OptionsFrame
+    Dropdown.OptionButtons = {}
+    
+    local function CreateOption(optionText)
+        local OptionButton = Instance.new("TextButton")
+        OptionButton.Size = UDim2.new(1, 0, 0, 26)
+        OptionButton.BackgroundColor3 = Color3.fromRGB(40, 40, 52)
+        OptionButton.BackgroundTransparency = 1
+        OptionButton.BorderSizePixel = 0
+        OptionButton.Text = optionText
+        OptionButton.TextColor3 = Color3.fromRGB(180, 180, 195)
+        OptionButton.TextSize = 11
+        OptionButton.Font = Enum.Font.Gotham
+        OptionButton.AutoButtonColor = false
+        OptionButton.Parent = OptionsFrame
+        
+        local OptionCorner = Instance.new("UICorner")
+        OptionCorner.CornerRadius = UDim.new(0, 4)
+        OptionCorner.Parent = OptionButton
+        
+        OptionButton.MouseEnter:Connect(function()
+            TweenService:Create(OptionButton, TweenInfo.new(0.1), {BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        end)
+        
+        OptionButton.MouseLeave:Connect(function()
+            TweenService:Create(OptionButton, TweenInfo.new(0.1), {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(180, 180, 195)}):Play()
+        end)
+        
+        OptionButton.MouseButton1Click:Connect(function()
+            Dropdown.Value = optionText
+            DropdownText.Text = optionText
+            Dropdown.Callback(optionText)
+            Dropdown.Open = false
+            TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 0, 55)}):Play()
+            TweenService:Create(DropdownArrow, TweenInfo.new(0.2), {Rotation = 90}):Play()
+        end)
+        
+        table.insert(Dropdown.OptionButtons, OptionButton)
+        return OptionButton
+    end
+    
+    for _, opt in ipairs(options) do
+        CreateOption(opt)
+    end
+    
+    DropdownButton.MouseButton1Click:Connect(function()
+        Dropdown.Open = not Dropdown.Open
+        local targetSize = Dropdown.Open and UDim2.new(1, 0, 0, 60 + #Dropdown.Options * 28 + 8) or UDim2.new(1, 0, 0, 55)
+        TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {Size = targetSize}):Play()
+        TweenService:Create(DropdownArrow, TweenInfo.new(0.2), {Rotation = Dropdown.Open and 270 or 90}):Play()
+    end)
+    
+    DropdownButton.MouseEnter:Connect(function()
+        TweenService:Create(DropdownButton, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(38, 38, 50)}):Play()
+    end)
+    
+    DropdownButton.MouseLeave:Connect(function()
+        TweenService:Create(DropdownButton, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 30, 40)}):Play()
+    end)
+    
+    -- CALLBACK İLE GÜNCELLEME
+    function Dropdown:SetValue(value)
+        if table.find(Dropdown.Options, value) then
+            Dropdown.Value = value
+            Dropdown.TextLabel.Text = value
+            Dropdown.Callback(value)
+        end
+    end
+    
+    -- CALLBACK OLMADAN GÜNCELLEME (CONFIG LOAD İÇİN)
+    function Dropdown:SetValueNoCallback(value)
+        if table.find(Dropdown.Options, value) then
+            Dropdown.Value = value
+            Dropdown.TextLabel.Text = value
+            -- CALLBACK YOK!
+        end
+    end
+    
+    -- DROPDOWN LİSTESİNİ GÜNCELLE (YENİ CONFIG'LER İÇİN)
+    function Dropdown:UpdateOptions(newOptions, defaultValue)
+        -- Eski butonları temizle
+        for _, btn in ipairs(Dropdown.OptionButtons) do
+            btn:Destroy()
+        end
+        Dropdown.OptionButtons = {}
+        
+        -- Yeni options'ları kaydet
+        Dropdown.Options = newOptions
+        
+        -- Yeni butonları oluştur
+        for _, opt in ipairs(newOptions) do
+            CreateOption(opt)
         end
         
+        -- Options frame boyutunu güncelle
+        OptionsFrame.Size = UDim2.new(1, 0, 0, #newOptions * 28 + 8)
+        
+        -- Default değeri ayarla
+        if defaultValue and table.find(newOptions, defaultValue) then
+            Dropdown.Value = defaultValue
+            Dropdown.TextLabel.Text = defaultValue
+        elseif #newOptions > 0 then
+            Dropdown.Value = newOptions[1]
+            Dropdown.TextLabel.Text = newOptions[1]
+        else
+            Dropdown.Value = ""
+            Dropdown.TextLabel.Text = "No options"
+        end
+        
+        -- Dropdown'u kapat
+        Dropdown.Open = false
+        DropdownFrame.Size = UDim2.new(1, 0, 0, 55)
+        DropdownArrow.Rotation = 90
+    end
+    
+    function Dropdown:GetValue()
+        return Dropdown.Value
+    end
+    
+    return Dropdown
+end
         -- ═══════════════════════════════════════════════════════
         -- BUTTON
         -- ═══════════════════════════════════════════════════════
