@@ -516,83 +516,102 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
         Section.Frame = SectionFrame
         Section.Content = SectionContent
         
-        -- ═══════════════════════════════════════════════════════
-        -- TOGGLE
-        -- ═══════════════════════════════════════════════════════
-        function Section:CreateToggle(name, default, callback)
-            local Toggle = {Value = default or false, Callback = callback or function() end}
-            
-            local ToggleFrame = Instance.new("Frame")
-            ToggleFrame.Size = UDim2.new(1, 0, 0, 32)
-            ToggleFrame.BackgroundTransparency = 1
-            ToggleFrame.Parent = SectionContent
-            
-            local ToggleLabel = Instance.new("TextLabel")
-            ToggleLabel.Size = UDim2.new(1, -55, 1, 0)
-            ToggleLabel.BackgroundTransparency = 1
-            ToggleLabel.Text = name
-            ToggleLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
-            ToggleLabel.TextSize = 12
-            ToggleLabel.Font = Enum.Font.Gotham
-            ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-            ToggleLabel.Parent = ToggleFrame
-            
-            local ToggleButton = Instance.new("TextButton")
-            ToggleButton.Size = UDim2.new(0, 40, 0, 20)
-            ToggleButton.Position = UDim2.new(1, -40, 0.5, -10)
+function Section:CreateToggle(name, default, callback, configKey)
+    local Toggle = {
+        Value = default or false, 
+        Callback = callback or function() end,
+        ConfigKey = configKey -- Config key'i sakla
+    }
+    
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(1, 0, 0, 32)
+    ToggleFrame.BackgroundTransparency = 1
+    ToggleFrame.Parent = SectionContent
+    
+    local ToggleLabel = Instance.new("TextLabel")
+    ToggleLabel.Size = UDim2.new(1, -55, 1, 0)
+    ToggleLabel.BackgroundTransparency = 1
+    ToggleLabel.Text = name
+    ToggleLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+    ToggleLabel.TextSize = 12
+    ToggleLabel.Font = Enum.Font.Gotham
+    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ToggleLabel.Parent = ToggleFrame
+    
+    local ToggleButton = Instance.new("TextButton")
+    ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+    ToggleButton.Position = UDim2.new(1, -40, 0.5, -10)
+    ToggleButton.BackgroundColor3 = Toggle.Value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
+    ToggleButton.BorderSizePixel = 0
+    ToggleButton.Text = ""
+    ToggleButton.AutoButtonColor = false
+    ToggleButton.Parent = ToggleFrame
+    
+    local ToggleBtnCorner = Instance.new("UICorner")
+    ToggleBtnCorner.CornerRadius = UDim.new(1, 0)
+    ToggleBtnCorner.Parent = ToggleButton
+    
+    local Circle = Instance.new("Frame")
+    Circle.Size = UDim2.new(0, 14, 0, 14)
+    Circle.Position = Toggle.Value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+    Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Circle.BorderSizePixel = 0
+    Circle.Parent = ToggleButton
+    
+    local CircleCorner = Instance.new("UICorner")
+    CircleCorner.CornerRadius = UDim.new(1, 0)
+    CircleCorner.Parent = Circle
+    
+    function Toggle:SetValue(value)
+        Toggle.Value = value
+        TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {
+            BackgroundColor3 = value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
+        }):Play()
+        TweenService:Create(Circle, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {
+            Position = value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+        }):Play()
+        Toggle.Callback(value)
+    end
+    function Toggle:SetValueNoCallback(value)
+    Toggle.Value = value
+    -- Animasyonsuz güncelle
+    ToggleButton.BackgroundColor3 = value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
+    Circle.Position = value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
+    -- CALLBACK ÇAĞIRMA!
+end
+
+    function Toggle:UpdateFromConfig()
+        -- Config'den değeri al
+        if Toggle.ConfigKey and _G.CurrentConfig and _G.CurrentConfig[Toggle.ConfigKey] ~= nil then
+            Toggle.Value = _G.CurrentConfig[Toggle.ConfigKey]
+            -- UI'yi animasyonsuz güncelle
             ToggleButton.BackgroundColor3 = Toggle.Value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
-            ToggleButton.BorderSizePixel = 0
-            ToggleButton.Text = ""
-            ToggleButton.AutoButtonColor = false
-            ToggleButton.Parent = ToggleFrame
-            
-            local ToggleBtnCorner = Instance.new("UICorner")
-            ToggleBtnCorner.CornerRadius = UDim.new(1, 0)
-            ToggleBtnCorner.Parent = ToggleButton
-            
-            local Circle = Instance.new("Frame")
-            Circle.Size = UDim2.new(0, 14, 0, 14)
             Circle.Position = Toggle.Value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
-            Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Circle.BorderSizePixel = 0
-            Circle.Parent = ToggleButton
-            
-            local CircleCorner = Instance.new("UICorner")
-            CircleCorner.CornerRadius = UDim.new(1, 0)
-            CircleCorner.Parent = Circle
-            
-            function Toggle:SetValue(value)
-                Toggle.Value = value
-                TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {
-                    BackgroundColor3 = value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
-                }):Play()
-                TweenService:Create(Circle, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {
-                    Position = value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
-                }):Play()
-                Toggle.Callback(value)
-            end
-            
-            function Toggle:Refresh()
-                ToggleButton.BackgroundColor3 = Toggle.Value and PrimordialUI.AccentColor or Color3.fromRGB(45, 45, 55)
-                Circle.Position = Toggle.Value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7)
-            end
-            
-            ToggleButton.MouseButton1Click:Connect(function()
-                Toggle:SetValue(not Toggle.Value)
-            end)
-            
-            ToggleFrame.MouseEnter:Connect(function()
-                TweenService:Create(ToggleLabel, TweenInfo.new(0.1), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-            end)
-            
-            ToggleFrame.MouseLeave:Connect(function()
-                TweenService:Create(ToggleLabel, TweenInfo.new(0.1), {TextColor3 = Color3.fromRGB(200, 200, 210)}):Play()
-            end)
-            
-            table.insert(PrimordialUI.Toggles, Toggle)
-            
-            return Toggle
         end
+    end
+    
+    ToggleButton.MouseButton1Click:Connect(function()
+        Toggle:SetValue(not Toggle.Value)
+    end)
+    
+    ToggleFrame.MouseEnter:Connect(function()
+        TweenService:Create(ToggleLabel, TweenInfo.new(0.1), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    end)
+    
+    ToggleFrame.MouseLeave:Connect(function()
+        TweenService:Create(ToggleLabel, TweenInfo.new(0.1), {TextColor3 = Color3.fromRGB(200, 200, 210)}):Play()
+    end)
+    
+    -- Config key varsa toggle'ı sakla
+    if configKey then
+        if not PrimordialUI.ConfigToggles then
+            PrimordialUI.ConfigToggles = {}
+        end
+        PrimordialUI.ConfigToggles[configKey] = Toggle
+    end
+    
+    return Toggle
+end
         
         -- ═══════════════════════════════════════════════════════
         -- SLIDER
