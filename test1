@@ -1036,7 +1036,54 @@ function PrimordialUI:CreateTab(name, icon, subtitle)
             
             return Textbox
         end
-        
+
+-- ═══════════════════════════════════════════════════════════════
+-- ALTERNATİF: RGB SLIDER SİSTEMİ (ColorPicker yoksa)
+-- ═══════════════════════════════════════════════════════════════
+
+local ColorSection = VisualsTab:CreateSection("Terrorist Color (RGB)", "Left")
+
+local tR, tG, tB = math.floor(Config.TerroristColor.R * 255), 
+                   math.floor(Config.TerroristColor.G * 255), 
+                   math.floor(Config.TerroristColor.B * 255)
+
+ColorSection:CreateSlider("Red", 0, 255, tR, "", function(v)
+    tR = v
+    Config.TerroristColor = Color3.fromRGB(tR, tG, tB)
+end)
+
+ColorSection:CreateSlider("Green", 0, 255, tG, "", function(v)
+    tG = v
+    Config.TerroristColor = Color3.fromRGB(tR, tG, tB)
+end)
+
+ColorSection:CreateSlider("Blue", 0, 255, tB, "", function(v)
+    tB = v
+    Config.TerroristColor = Color3.fromRGB(tR, tG, tB)
+end)
+
+-- Aynı şekilde CT, NoTeam, Visible/Hidden renkler için tekrarla
+local CTColorSection = VisualsTab:CreateSection("CT Color (RGB)", "Right")
+
+local ctR, ctG, ctB = math.floor(Config.CounterTerroristColor.R * 255),
+                      math.floor(Config.CounterTerroristColor.G * 255),
+                      math.floor(Config.CounterTerroristColor.B * 255)
+
+CTColorSection:CreateSlider("Red", 0, 255, ctR, "", function(v)
+    ctR = v
+    Config.CounterTerroristColor = Color3.fromRGB(ctR, ctG, ctB)
+end)
+
+CTColorSection:CreateSlider("Green", 0, 255, ctG, "", function(v)
+    ctG = v
+    Config.CounterTerroristColor = Color3.fromRGB(ctR, ctG, ctB)
+end)
+
+CTColorSection:CreateSlider("Blue", 0, 255, ctB, "", function(v)
+    ctB = v
+    Config.CounterTerroristColor = Color3.fromRGB(ctR, ctG, ctB)
+end)
+
         -- ═══════════════════════════════════════════════════════
         -- LABEL
         -- ═══════════════════════════════════════════════════════
