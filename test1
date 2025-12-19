@@ -73,7 +73,7 @@ local LogoIcon = Instance.new("ImageLabel")
 LogoIcon.Size = UDim2.new(0, 32, 0, 32)
 LogoIcon.Position = UDim2.new(0, 20, 0.5, -16)
 LogoIcon.BackgroundTransparency = 1
-LogoIcon.Image = "rbxassetid://7733779610"
+LogoIcon.Image = "rbxassetid://82522249020124"
 LogoIcon.ImageColor3 = PrimordialUI.AccentColor
 LogoIcon.Parent = LogoSection
 
