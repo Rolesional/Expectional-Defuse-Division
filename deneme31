@@ -1,0 +1,412 @@
+--// MemeSense-like UI Library (no functionality)
+
+local MemeUI = {}
+
+-- Theme
+local THEME = {
+    Background = Color3.fromRGB(10, 10, 12),
+    Sidebar    = Color3.fromRGB(16, 16, 20),
+    Topbar     = Color3.fromRGB(20, 20, 25),
+    Accent     = Color3.fromRGB(220, 70, 80),
+    Text       = Color3.fromRGB(235, 235, 235),
+    SubText    = Color3.fromRGB(150, 150, 160),
+    SectionBg  = Color3.fromRGB(22, 22, 28),
+    SliderBg   = Color3.fromRGB(40, 40, 50),
+    SliderFill = Color3.fromRGB(230, 230, 240),
+    CheckboxOn = Color3.fromRGB(220, 70, 80),
+    CheckboxOff= Color3.fromRGB(35, 35, 45),
+    DropdownBg = Color3.fromRGB(25, 25, 32)
+}
+
+local UIS = game:GetService("UserInputService")
+
+local function create(instance, props)
+    local obj = Instance.new(instance)
+    for k, v in pairs(props) do obj[k] = v end
+    return obj
+end
+
+-- Draggable topbar
+local function makeDraggable(frame, dragHandle)
+    local dragging, dragStart, startPos
+
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+function MemeUI.CreateWindow(titleText)
+    local gui = create("ScreenGui", {
+        ResetOnSpawn = false,
+        Name = "MemeSenseUI"
+    })
+
+    gui.Parent = game:GetService("CoreGui")
+
+    -- Main window
+    local main = create("Frame", {
+        Parent = gui,
+        Size = UDim2.new(0, 650, 0, 400),
+        Position = UDim2.new(0.5, -325, 0.5, -200),
+        BackgroundColor3 = THEME.Background,
+        BorderSizePixel = 0
+    })
+
+    local uicorner = create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = main })
+
+    -- Topbar
+    local topbar = create("Frame", {
+        Parent = main,
+        Size = UDim2.new(1, 0, 0, 32),
+        BackgroundColor3 = THEME.Topbar,
+        BorderSizePixel = 0
+    })
+
+    local title = create("TextLabel", {
+        Parent = topbar,
+        Size = UDim2.new(0, 200, 1, 0),
+        Position = UDim2.new(0, 10, 0, 0),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.Gotham,
+        Text = titleText or "MemeSense",
+        TextColor3 = THEME.Text,
+        TextSize = 18,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+
+    -- Master switch + profile dropdown mock
+    local master = create("TextLabel", {
+        Parent = topbar,
+        Size = UDim2.new(0, 120, 1, 0),
+        Position = UDim2.new(0, 220, 0, 0),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.Gotham,
+        Text = "Master switch",
+        TextColor3 = THEME.SubText,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+
+    local weaponDrop = create("TextLabel", {
+        Parent = topbar,
+        Size = UDim2.new(0, 120, 1, 0),
+        Position = UDim2.new(0, 360, 0, 0),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.Gotham,
+        Text = "Per weapons ▼",
+        TextColor3 = THEME.SubText,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+
+    local gunDrop = create("TextLabel", {
+        Parent = topbar,
+        Size = UDim2.new(0, 120, 1, 0),
+        Position = UDim2.new(0, 490, 0, 0),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.Gotham,
+        Text = "Desert Eagle ▼",
+        TextColor3 = THEME.SubText,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+
+    -- Save icon (fake)
+    local saveBtn = create("TextButton", {
+        Parent = topbar,
+        Size = UDim2.new(0, 60, 0, 22),
+        Position = UDim2.new(1, -70, 0.5, -11),
+        BackgroundColor3 = THEME.Accent,
+        BorderSizePixel = 0,
+        Font = Enum.Font.Gotham,
+        Text = "Save",
+        TextColor3 = Color3.new(1,1,1),
+        TextSize = 14
+    })
+    create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = saveBtn })
+
+    makeDraggable(main, topbar)
+
+    -- Sidebar (tab list)
+    local sidebar = create("Frame", {
+        Parent = main,
+        Size = UDim2.new(0, 130, 1, -32),
+        Position = UDim2.new(0, 0, 0, 32),
+        BackgroundColor3 = THEME.Sidebar,
+        BorderSizePixel = 0
+    })
+
+    local tabsLayout = create("UIListLayout", {
+        Parent = sidebar,
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Padding = UDim.new(0, 4)
+    })
+
+    local padding = create("UIPadding", {
+        Parent = sidebar,
+        PaddingTop = UDim.new(0, 8),
+        PaddingLeft = UDim.new(0, 8)
+    })
+
+    -- Content area
+    local contentHolder = create("Frame", {
+        Parent = main,
+        Size = UDim2.new(1, -130, 1, -32),
+        Position = UDim2.new(0, 130, 0, 32),
+        BackgroundTransparency = 1
+    })
+
+    local window = {}
+
+    function window:CreateTab(tabName)
+        local tabButton = create("TextButton", {
+            Parent = sidebar,
+            Size = UDim2.new(1, -16, 0, 26),
+            BackgroundColor3 = THEME.Sidebar,
+            BorderSizePixel = 0,
+            Font = Enum.Font.Gotham,
+            Text = tabName,
+            TextColor3 = THEME.SubText,
+            TextSize = 14
+        })
+
+        local underline = create("Frame", {
+            Parent = tabButton,
+            Size = UDim2.new(0, 3, 1, 0),
+            Position = UDim2.new(0, -3, 0, 0),
+            BackgroundColor3 = THEME.Accent,
+            BorderSizePixel = 0,
+            Visible = false
+        })
+
+        local tabFrame = create("Frame", {
+            Parent = contentHolder,
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundTransparency = 1,
+            Visible = false
+        })
+
+        local columns = {}
+        for i = 1, 3 do
+            local col = create("Frame", {
+                Parent = tabFrame,
+                Size = UDim2.new(1/3, -10, 1, -10),
+                Position = UDim2.new((i-1)/3, 5, 0, 5),
+                BackgroundTransparency = 1
+            })
+            local list = create("UIListLayout", {
+                Parent = col,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 6)
+            })
+            table.insert(columns, col)
+        end
+
+        local tab = { Columns = columns, Frame = tabFrame }
+
+        function tab:AddSection(title)
+            local col = columns[1]
+
+            local holder = create("Frame", {
+                Parent = col,
+                Size = UDim2.new(1, 0, 0, 160),
+                BackgroundColor3 = THEME.SectionBg,
+                BorderSizePixel = 0
+            })
+            create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = holder })
+
+            local padding = create("UIPadding", {
+                Parent = holder,
+                PaddingTop = UDim.new(0, 10),
+                PaddingLeft = UDim.new(0, 10),
+                PaddingRight = UDim.new(0, 10)
+            })
+
+            local titleLabel = create("TextLabel", {
+                Parent = holder,
+                Size = UDim2.new(1, 0, 0, 16),
+                BackgroundTransparency = 1,
+                Font = Enum.Font.Gotham,
+                Text = title,
+                TextColor3 = THEME.Text,
+                TextSize = 14,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            local layout = create("UIListLayout", {
+                Parent = holder,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 4)
+            })
+
+            local section = { Holder = holder }
+
+            function section:AddCheckbox(text)
+                local cb = create("Frame", {
+                    Parent = holder,
+                    Size = UDim2.new(1, 0, 0, 20),
+                    BackgroundTransparency = 1
+                })
+
+                local box = create("Frame", {
+                    Parent = cb,
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Position = UDim2.new(0, 0, 0.5, -8),
+                    BackgroundColor3 = THEME.CheckboxOn,
+                    BorderSizePixel = 0
+                })
+                create("UICorner", { CornerRadius = UDim.new(0, 3), Parent = box })
+
+                local textLabel = create("TextLabel", {
+                    Parent = cb,
+                    Size = UDim2.new(1, -24, 1, 0),
+                    Position = UDim2.new(0, 24, 0, 0),
+                    BackgroundTransparency = 1,
+                    Font = Enum.Font.Gotham,
+                    Text = text,
+                    TextColor3 = THEME.SubText,
+                    TextSize = 13,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+
+                return cb
+            end
+
+            function section:AddSlider(text, valueText)
+                local frame = create("Frame", {
+                    Parent = holder,
+                    Size = UDim2.new(1, 0, 0, 32),
+                    BackgroundTransparency = 1
+                })
+
+                local top = create("TextLabel", {
+                    Parent = frame,
+                    Size = UDim2.new(0.5, 0, 0, 14),
+                    BackgroundTransparency = 1,
+                    Font = Enum.Font.Gotham,
+                    Text = text,
+                    TextColor3 = THEME.SubText,
+                    TextSize = 13,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+
+                local val = create("TextLabel", {
+                    Parent = frame,
+                    Size = UDim2.new(0.5, 0, 0, 14),
+                    Position = UDim2.new(0.5, 0, 0, 0),
+                    BackgroundTransparency = 1,
+                    Font = Enum.Font.Gotham,
+                    Text = valueText or "0",
+                    TextColor3 = THEME.SubText,
+                    TextSize = 13,
+                    TextXAlignment = Enum.TextXAlignment.Right
+                })
+
+                local bar = create("Frame", {
+                    Parent = frame,
+                    Size = UDim2.new(1, 0, 0, 6),
+                    Position = UDim2.new(0, 0, 0, 20),
+                    BackgroundColor3 = THEME.SliderBg,
+                    BorderSizePixel = 0
+                })
+                create("UICorner", { CornerRadius = UDim.new(0, 3), Parent = bar })
+
+                local fill = create("Frame", {
+                    Parent = bar,
+                    Size = UDim2.new(0.7, 0, 1, 0),
+                    BackgroundColor3 = THEME.SliderFill,
+                    BorderSizePixel = 0
+                })
+                create("UICorner", { CornerRadius = UDim.new(0, 3), Parent = fill })
+
+                return frame
+            end
+
+            function section:AddDropdown(text, value)
+                local frame = create("Frame", {
+                    Parent = holder,
+                    Size = UDim2.new(1, 0, 0, 24),
+                    BackgroundTransparency = 1
+                })
+
+                local label = create("TextLabel", {
+                    Parent = frame,
+                    Size = UDim2.new(0.5, 0, 1, 0),
+                    BackgroundTransparency = 1,
+                    Font = Enum.Font.Gotham,
+                    Text = text,
+                    TextColor3 = THEME.SubText,
+                    TextSize = 13,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+
+                local box = create("TextLabel", {
+                    Parent = frame,
+                    Size = UDim2.new(0.5, 0, 1, 0),
+                    Position = UDim2.new(0.5, 0, 0, 0),
+                    BackgroundColor3 = THEME.DropdownBg,
+                    BorderSizePixel = 0,
+                    Font = Enum.Font.Gotham,
+                    Text = (value or "") .. " ▼",
+                    TextColor3 = THEME.SubText,
+                    TextSize = 13
+                })
+                create("UICorner", { CornerRadius = UDim.new(0, 3), Parent = box })
+
+                return frame
+            end
+
+            return section
+        end
+
+        -- tab switching (visual only)
+        tabButton.MouseButton1Click:Connect(function()
+            for _, child in ipairs(contentHolder:GetChildren()) do
+                if child:IsA("Frame") then child.Visible = false end
+            end
+            for _, b in ipairs(sidebar:GetChildren()) do
+                if b:IsA("TextButton") then
+                    b.TextColor3 = THEME.SubText
+                    if b:FindFirstChildOfClass("Frame") then
+                        b:FindFirstChildOfClass("Frame").Visible = false
+                    end
+                end
+            end
+            tabFrame.Visible = true
+            tabButton.TextColor3 = THEME.Text
+            underline.Visible = true
+        end)
+
+        if #sidebar:GetChildren() == 3 then
+            tabButton:MouseButton1Click()
+        end
+
+        return tab
+    end
+
+    return window
+end
+
+return MemeUI
